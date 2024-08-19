@@ -1,0 +1,43 @@
+﻿@model CommentViewModel
+
+@{
+    var isReply = (bool)ViewData["isReply"];
+    var formId = "0";
+    if (isReply)
+    {
+        formId = Model.ParentCommentId.HasValue ? $"create-form-{Model.ParentCommentId}" : $"create-form-{Model.PostId}";
+    }
+    else
+    {
+        formId = Model.ParentCommentId.HasValue ? $"create-form-0" : $"create-form-0";
+    }
+}
+
+<div id="@formId" class="create-form @(isReply ? "collapse" : "")">
+    <form method="post" action="@Url.Action("Create", "Comment")">
+        <div class="form-group mb-3">
+            <label for="Content">@(isReply ? "Reply" : "Comment")</label>
+            <textarea name="Content" class="form-control" placeholder="@(isReply ? "Add a reply" : "Add a comment")"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+        @if (ViewBag.IsAuthenticated)
+        {
+            <input type="submit" value="@(isReply ? "Reply" : "Add Comment")" class="btn btn-primary" />
+        }
+        else
+        {
+            <a href="@Url.Action("Login","Authentication")" class="btn btn-secondary">Login to @(isReply ? "Reply" : "Add Comment")</a>
+        }
+
+        @if (isReply)
+        {
+            <button type="button" class="btn btn-secondary cancel-create" data-bs-toggle="collapse" data-bs-target="#@formId">Cancel</button>
+        }
+        <input type="hidden" name="PostId" value="@Model.PostId" />
+        @if (Model.ParentCommentId != null)
+        {
+            <input type="hidden" name="ParentCommentId" value="@Model.ParentCommentId" />
+        }
+        <input type="hidden" name="Username" value="@ViewBag.Username" />
+    </form>
+</div>

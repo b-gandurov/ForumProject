@@ -1,0 +1,216 @@
+﻿@using ForumProject.Models.ViewModels.User
+@model ProfileViewModel
+<script src="~/js/user.js"></script>
+
+<section>
+    @if (Model.IsDeleted)
+    {
+        <div class="container pb-5">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">User</li>
+                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+
+                        <div class="card-body text-center">
+                            @* <img src="@Model.User.ProfilePicture" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;"> *@
+                            <h5 class="my-3">User Deleted</h5>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="container pb-5">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">User</li>
+                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+
+                            <li class="breadcrumb-item active" aria-current="page">@Model.User.Username</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+
+                        <div class="card-body text-center">
+                            <img src="@Model.User.ProfilePictureURL" alt="avatar"
+                                 class="rounded-circle img-fluid" style="width: 150px;">
+                            <h5 class="my-3">@Model.User.Username</h5>
+                            <p class="text-muted mb-1">@Model.User.FirstName @Model.User.LastName</p>
+
+                            @if (ViewBag.IsAdmin)
+                            {
+                                <button class="btn btn-warning" onclick="ShowDeleteUser()">
+                                    Delete
+                                </button>
+
+                                <div class="card py-2 my-2 d-none" id="deleteUser">
+                                    <h4>
+                                        Confirmation
+                                    </h4>
+                                    <h5 class="fw-normal">
+                                        Are you sure you want to delete?
+                                    </h5>
+
+                                    <form asp-controller="User" asp-action="Delete" class="mt-2">
+                                        <input type="hidden" name="userId" value="@Model.User.Id" />
+                                        <button type="submit" class="btn btn-danger">Delete User</button>
+                                    </form>
+                                </div>
+
+
+                                if (ViewBag.IsBlocked)
+                                {
+                                    <button class="btn btn-warning" onclick="ShowUnblockUser()">
+                                        Unblock
+                                    </button>
+
+                                    <div class="card py-2 my-2 d-none" id="unblockUser">
+                                        <h4>
+                                            Confirmation
+                                        </h4>
+                                        <h5 class="fw-normal">
+                                            Are you sure you want to Unblock?
+                                        </h5>
+
+                                        <form asp-controller="User" asp-action="UnblockUser" method="post" class="mt-2">
+                                            <input type="hidden" name="userId" value="@Model.User.Id" />
+                                            <button type="submit" class="btn btn-warning">Unblock User</button>
+                                        </form>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <button class="btn btn-warning" onclick="ShowBlockUser()">
+                                        Block
+                                    </button>
+
+                                    <div class="card py-2 my-2 d-none" id="blockUser">
+                                        <h4>
+                                            Confirmation
+                                        </h4>
+                                        <h5 class="fw-normal">
+                                            Are you sure you want to block?
+                                        </h5>
+
+                                        <form asp-controller="User" asp-action="BlockUser" method="post" class="mt-2">
+                                            <input type="hidden" name="userId" value="@Model.User.Id" />
+                                            <button type="submit" class="btn btn-danger">Block User</button>
+                                        </form>
+                                    </div>
+                                }
+
+                                if (ViewBag.IsUserAdmin)
+                                {
+                                    <button class="btn btn-warning" onclick="ShowDemoteUser()">
+                                        Demote
+                                    </button>
+
+                                    <div class="card py-2 my-2 d-none" id="demoteUser">
+                                        <h4>
+                                            Confirmation
+                                        </h4>
+                                        <h5 class="fw-normal">
+                                            Are you sure you want to demote?
+                                        </h5>
+
+                                        <form asp-controller="User" asp-action="DemoteFromAdmin" method="post" class="mt-2">
+                                            <input type="hidden" name="userId" value="@Model.User.Id" />
+                                            <button type="submit" class="btn btn-danger">Demote from admin</button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-warning" onclick="ShowPromoteUser()">
+                                        Promote
+                                    </button>
+
+                                    <div class="card py-2 my-2 d-none" id="promoteUser">
+                                        <h4>
+                                            Confirmation
+                                        </h4>
+                                        <h5 class="fw-normal">
+                                            Are you sure you want to promote?
+                                        </h5>
+
+                                        <form asp-controller="User" asp-action="PromoteToAdmin" method="post" class="mt-2">
+                                            <input type="hidden" name="userId" value="@Model.User.Id" />
+                                            <button type="submit" class="btn btn-danger">Promote to admin</button>
+                                        </form>
+                                    </div>
+                                }
+
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+
+
+                            @if (Model.Posts.Any())
+                            {
+                                @foreach (var post in Model.Posts)
+                                {
+                                    <div class="text-muted pt-3">
+                                        <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <div class="d-flex">
+                                                    <div class="mx-3">
+                                                        <h3>@post.Title</h3>
+                                                    </div>
+                                                </div>
+
+                                                @Html.ActionLink("View full post", "Details", "Posts", new { id = post.Id }, null)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <h2>No posts from this user.</h2>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</section>

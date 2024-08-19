@@ -1,0 +1,76 @@
+﻿@model CommentViewModel
+
+<div class="comment mb-4 p-3 bg-light">
+    <div id="original-comment-@Model.Id" class="original-comment">
+        @if (Model.DeletedAt.HasValue)
+        {
+            <p>[Comment Deleted]</p>
+            <p><small>Deleted on @Model.DeletedAt</small></p>
+        }
+        else
+        {
+            <div class="d-flex mb-4 border p-3 rounded">
+                <div class="me-3 text-center border p-2 rounded">
+                    <img src="@Url.Content(Model.User.ProfilePictureURL)" class="rounded-circle" alt="@Model.User.Username" style="width: 60px; height: 60px;">
+                    <p><small><a href="@Url.Action("Profile", "User", new { username = @Model.User.Username })">@Model.User.Username</a></small></p>
+                </div>
+                <div class="flex-grow-1 border p-3 rounded">
+                    <p>@Model.Content</p>
+                    <p class="text-muted"><small>@Model.CreatedDate</small></p>
+                </div>
+            </div>
+
+
+        }
+    </div>
+
+    <div class="form-container mb-3">
+        @if (!Model.DeletedAt.HasValue)
+        {
+            @await Html.PartialAsync("_EditForm", Model)
+            @await Html.PartialAsync("_DeleteForm", Model)
+            var replyViewData = new ViewDataDictionary(ViewData) { { "isReply", true } };
+            @await Html.PartialAsync("_CreateCommentForm", new CommentViewModel { PostId = Model.PostId, ParentCommentId = Model.Id }, replyViewData)
+        }
+    </div>
+    
+
+   
+    <div class="comment-actions d-flex mb-2 justify-content-lg-between">
+        @if (!Model.DeletedAt.HasValue)
+        {
+            @await Html.PartialAsync("_Reactions")
+            <div>
+                @if (!Model.DeletedAt.HasValue)
+                {
+                    <button class="btn btn-light reply-button" data-bs-toggle="collapse" data-bs-target="#create-form-@Model.Id">Reply</button>
+                }
+                @if (!Model.DeletedAt.HasValue && (ViewBag.IsAdmin || ViewBag.Username == @Model.User.Username))
+                {
+                    <button class="btn btn-warning edit-button" data-bs-toggle="collapse" data-bs-target="#edit-form-@Model.Id">Edit</button>
+                    <button class="btn btn-danger delete-button" data-bs-toggle="collapse" data-bs-target="#delete-form-@Model.Id">Delete</button>
+                }
+
+            </div>
+        }
+
+    </div>
+
+    @if (Model.Replies != null && Model.Replies.Any())
+    {
+        <div class="replies ms-4 border-start ps-3">
+            @foreach (var reply in Model.Replies)
+            {
+                @await Html.PartialAsync("_Comment", reply)
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

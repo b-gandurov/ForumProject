@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var topCommentedPosts = ViewBag.TopCommentedPosts;
+    var recentPosts = ViewBag.RecentPosts;
+    var topReactedPosts = ViewBag.TopReactedPosts;
+    var totalUsers = ViewBag.TotalUsers;
+    var totalPosts = ViewBag.TotalPosts;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4">Welcome to BG-BaBa</h1>
+            <p class="lead">The ultimate forum for Bulgarian grandmothers to exchange recipes, share stories, and showcase their crocheting projects. Join us and be a part of our loving community!</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <p class="card-text">@totalUsers.Count people are part of our community.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Posts</h5>
+                    <p class="card-text">@totalPosts.Count posts have been created so far.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-4">
+            <h3>Top 10 Most Commented Posts</h3>
+            <ul class="list-group">
+                @foreach (var post in topCommentedPosts)
+                {
+                    var postCommentsCount = post.Comments.Count;
+                    var show = string.IsNullOrEmpty(post.ImageUrl) ? false : true;
+                    if (show)
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="<img src='@post.ImageUrl' class='img-thumbnail' style='width: 100px; height: 100px;' />">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@postCommentsCount comments</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@postCommentsCount comments</span>
+                        </li>
+                    }
+
+                }
+            </ul>
+        </div>
+        <div class="col-lg-4">
+            <h3>10 Most Recently Created Posts</h3>
+            <ul class="list-group">
+                @foreach (var post in recentPosts)
+                {
+                    var show = string.IsNullOrEmpty(post.ImageUrl) ? false : true;
+                    if (show)
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="<img src='@post.ImageUrl' class='img-thumbnail' style='width: 100px; height: 100px;' />">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@post.CreatedAt.ToString("yyyy-MM-dd")</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@post.CreatedAt.ToString("yyyy-MM-dd")</span>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div class="col-lg-4">
+            <h3>Top 10 Most Reacted Posts</h3>
+            <ul class="list-group">
+                @foreach (var post in topReactedPosts)
+                {
+                    var postReactionsCount = post.Reactions.Count;
+                    var show = string.IsNullOrEmpty(post.ImageUrl) ? false : true;
+                    if (show)
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="<img src='@post.ImageUrl' class='img-thumbnail' style='width: 100px; height: 100px;' />">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@postReactionsCount reactions</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item" data-bs-toggle="tooltip">
+                            <a href="@Url.Action("Details", "Posts", new { id = post.Id })">@post.Title</a>
+                            <span class="badge bg-secondary float-end">@postReactionsCount reactions</span>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

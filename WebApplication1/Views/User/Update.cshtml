@@ -1,0 +1,83 @@
+﻿@using ForumProject.Models.ViewModels.User
+@model UpdateUserViewModel
+
+@{
+    ViewData["Title"] = "Update profile";
+}
+
+<section>
+    <div class="container pb-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a asp-controller="User" asp-action="Index">Profile</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Update</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card mb-4 mb-md-0">
+
+
+                <form asp-action="Update" class="mb-5">
+
+                    <input type="text" class="form-control" asp-for="UserId" value="@Model.UserId" hidden>
+
+                    <div class="mb-2">
+                        <label for="Email">Email</label>
+                        <input type="text" class="form-control" asp-for="Email" value="@Model.Email">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="FirstName">First Name</label>
+                        <input type="text" class="form-control" asp-for="FirstName" value="@Model.FirstName">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="LastName">Last Name</label>
+                        <input type="text" class="form-control" asp-for="LastName" value="@Model.LastName">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="NewPassword">New Password</label>
+                        <input type="text" class="form-control" asp-for="NewPassword" value="@Model.NewPassword">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="NewPasswordConfirmation">New Password Confirmation</label>
+                        <input type="text" class="form-control" asp-for="NewPasswordConfirmation" value="@Model.NewPasswordConfirmation">
+                        <span asp-validation-for="NewPasswordConfirmation" class="text-danger"></span>
+                    </div>
+                             
+                    @if (ViewBag.IsAdmin)
+                    {
+                        <div class="mb-2">
+                            <label for="PhoneNumber">Phone number</label>
+                            <input type="text" class="form-control" asp-for="PhoneNumber" value="@(string.IsNullOrEmpty(Model.PhoneNumber) ? "" : Model.PhoneNumber)">
+
+                        </div>
+                    }
+
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+
+                    <div class="form-group text-center">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger validation-summary-errors" })
+                    </div>
+                </form>
+                
+
+
+            </div>
+        </div>
+    </div>
+</section>

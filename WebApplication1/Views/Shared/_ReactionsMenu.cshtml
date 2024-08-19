@@ -1,0 +1,18 @@
+﻿@model ReactionsMenuViewModel
+
+<div class="reaction-container">
+    <button type="button" class="btn btn-primary reaction-button" data-target-id="@Model">Add Reaction</button>
+    <div class="reaction-popup">
+        
+        <form method="post" action="@Url.Action("AddReaction", "Reaction", new { reactionValue = 0, postId = Model.PostId, commentId = Model.CommentId })">
+            <input type="hidden" name="ReactionType" value="0">
+            <button type="submit" class="reaction-icon">👍</button>
+        </form>
+
+        <form method="post" action="@Url.Action("AddReaction", "Reaction", new { reactionValue = 1, postId = Model.PostId, commentId = Model.CommentId })">
+            <input type="hidden" name="ReactionType" value="1">
+            <button type="submit" class="reaction-icon">👎</button>
+        </form>
+        
+    </div>
+</div>

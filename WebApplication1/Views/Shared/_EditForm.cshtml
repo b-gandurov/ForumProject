@@ -1,0 +1,17 @@
+﻿@model CommentViewModel
+@{
+}
+<div class="edit-form collapse" id="edit-form-@Model.Id" aria-expanded="true" aria-controls="collapseOne">
+    <form method="post" action="@Url.Action("Edit", "Comment")">
+        <div class="form-group">
+            <label for="Content">Edit Comment</label>
+            <textarea name="Content" class="form-control">@Model.Content</textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <button type="button" class="btn btn-secondary cancel-edit" data-bs-toggle="collapse" data-bs-target="#edit-form-@Model.Id">Cancel</button>
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="PostId" value="@Model.PostId" />
+        <input type="hidden" name="UserName" value="@ViewBag.UserName" />
+    </form>
+</div>

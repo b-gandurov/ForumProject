@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Posts";
+    int totalCount = ViewBag.TotalCount;
+    int pageSize = ViewBag.PageSize;
+    int pageNumber = ViewBag.PageNumber;
+    int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+    var selectedCategory = ViewBag.FilterParameters?.Category;
+}
+
+@model IEnumerable<PostViewModel>
+
+<section style="background-color: #eee; border-radius:10px;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+
+                @if (Model.Any())
+                {
+                    @foreach (var post in Model)
+                    {
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3>
+
+                                    <a href="@Url.Action("Details", new { id = post.Id })">@post.Title</a>
+                                    @if (!string.IsNullOrEmpty(post.ImageUrl))
+                                    {
+                                        <span class="image-indicator" data-bs-toggle="tooltip" data-bs-placement="top" title="<img src='@post.ImageUrl' class='img-thumbnail' style='width: 100px; height: 100px;' />">🖼️</span>
+                                    }
+                                </h3>
+                                <p><strong>Category:</strong> <a href="@Url.Action("", new { Category = post.Category })">@post.Category</a></p>
+                                <p>@Html.Raw(StringHelpers.TruncateContent(post.Content, 100, post.Id, Url))</p>
+                                <p class="text-muted">Posted by <a href="@Url.Action("Profile", "User", new { username = @post.Username })">@post.Username</a> on @post.CreatedAt</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    @if (ViewBag.IsAdmin || ViewBag.UserName == post.Username)
+                                    {
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Edit", new { id = post.Id })" class="btn btn-warning">Edit</a>
+                                            <a href="@Url.Action("Delete", new { id = post.Id })" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No posts found.</p>
+                }
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { PageNumber = 1, PageSize = pageSize, Title = ViewBag.FilterParameters?.Title, CreatedAfter = ViewBag.FilterParameters?.CreatedAfter, CreatedBefore = ViewBag.FilterParameters?.CreatedBefore, UserName = ViewBag.FilterParameters?.UserName, SortBy = ViewBag.FilterParameters?.SortBy, SortOrder = ViewBag.FilterParameters?.SortOrder, Category = ViewBag.FilterParameters?.Category })" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { PageNumber = pageNumber - 1, PageSize = pageSize, Title = ViewBag.FilterParameters?.Title, CreatedAfter = ViewBag.FilterParameters?.CreatedAfter, CreatedBefore = ViewBag.FilterParameters?.CreatedBefore, UserName = ViewBag.FilterParameters?.UserName, SortBy = ViewBag.FilterParameters?.SortBy, SortOrder = ViewBag.FilterParameters?.SortOrder, Category = ViewBag.FilterParameters?.Category })" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        @for (var i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == pageNumber ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { PageNumber = i, PageSize = pageSize, Title = ViewBag.FilterParameters?.Title, CreatedAfter = ViewBag.FilterParameters?.CreatedAfter, CreatedBefore = ViewBag.FilterParameters?.CreatedBefore, UserName = ViewBag.FilterParameters?.UserName, SortBy = ViewBag.FilterParameters?.SortBy, SortOrder = ViewBag.FilterParameters?.SortOrder, Category = ViewBag.FilterParameters?.Category })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { PageNumber = pageNumber + 1, PageSize = pageSize, Title = ViewBag.FilterParameters?.Title, CreatedAfter = ViewBag.FilterParameters?.CreatedAfter, CreatedBefore = ViewBag.FilterParameters?.CreatedBefore, UserName = ViewBag.FilterParameters?.UserName, SortBy = ViewBag.FilterParameters?.SortBy, SortOrder = ViewBag.FilterParameters?.SortOrder, Category = ViewBag.FilterParameters?.Category })" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { PageNumber = totalPages, PageSize = pageSize, Title = ViewBag.FilterParameters?.Title, CreatedAfter = ViewBag.FilterParameters?.CreatedAfter, CreatedBefore = ViewBag.FilterParameters?.CreatedBefore, UserName = ViewBag.FilterParameters?.UserName, SortBy = ViewBag.FilterParameters?.SortBy, SortOrder = ViewBag.FilterParameters?.SortOrder, Category = ViewBag.FilterParameters?.Category })" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+            </div>
+
+            <div class="col-lg-4">
+                <form method="get" action="@Url.Action("Index", "Posts")">
+                    <div class="mb-3">
+                        <input class="form-control me-2" type="search" placeholder="Post Title" aria-label="Search" name="Title" value="@ViewBag.FilterParameters?.Title">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="UserName" placeholder="Creator of Post" name="UserName" value="@ViewBag.FilterParameters?.UserName" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Category" class="form-label">Category</label>
+                        <select class="form-select" id="Category" name="Category">
+                            <option value="">All</option>
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                var selected = selectedCategory == category ? true:false;
+                                <option value="@category" selected="@selected">@category</option>
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <label for="CreatedAfter" class="form-label">Created After</label>
+                            <input type="date" class="form-control" id="CreatedAfter" name="CreatedAfter" value="@ViewBag.FilterParameters?.CreatedAfter?.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="CreatedBefore" class="form-label">Created Before</label>
+                            <input type="date" class="form-control" id="CreatedBefore" name="CreatedBefore" value="@ViewBag.FilterParameters?.CreatedBefore?.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="SortBy" class="form-label">Sort By</label>
+                        <select class="form-select" id="SortBy" name="SortBy">
+                            <option value="CreatedAt" )>Created At</option>
+                            <option value="Title" )>Title</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="SortOrder" class="form-label">Sort Order</label>
+                        <select class="form-select" id="SortOrder" name="SortOrder">
+                            <option value="Descending" )>Descending</option>
+                            <option value="Ascending" )>Ascending</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <a href="@Url.Action("Create", "Posts")" class="btn btn-outline-success btn-lg btn-block">Create Post</a>
+            </div>
+        </div>
+    </div>
+    
+</section>

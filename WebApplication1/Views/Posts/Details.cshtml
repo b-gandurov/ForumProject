@@ -1,0 +1,72 @@
+﻿@model PostViewModel
+
+<section>
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="mb-4 border-bottom pb-2">@Model.Title</h2>
+                        <div class="bg-light p-3 mb-3">
+                        <p><strong>Category:</strong> <a href="@Url.Action("", new { Category = @Model.Category })">@Model.Category</a></p>
+                        <p class="text-muted">Posted by <a href="@Url.Action("Profile", "User", new { username = Model.Username })">@Model.Username</a> on @Model.CreatedAt</p>
+
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="text-center mb-4">
+                                <img src="@Model.ImageUrl" alt="Post Image" class="img-fluid" style="max-width: 500px; max-height: 500px; border:solid,1px;" />
+                            </div>
+                        }
+                        <p class="border-bottom pb-2">@Model.Content</p>
+
+                        @await Html.PartialAsync("_Reactions",Model)
+
+                        
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-0">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+                            @if (ViewBag.IsAdmin || ViewBag.Username == Model.Username)
+                            {
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Edit</a>
+                                    <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">Delete</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="mb-4">Comments</h3>
+                        @{
+                            var createCommentViewData = new ViewDataDictionary(ViewData) { { "isReply", false } };
+                        }
+                        @await Html.PartialAsync("_CreateCommentForm", new CommentViewModel { PostId = Model.Id }, createCommentViewData)
+                        <hr />
+                        @if (Model.Comments.Any())
+                        {
+                            @foreach (var comment in Model.Comments.Where(c => c.ParentCommentId == null))
+                            {
+                                @await Html.PartialAsync("_Comment", comment)
+                                <hr />
+                            }
+                        }
+                        else
+                        {
+                            <p>No comments available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

@@ -1,0 +1,49 @@
+﻿@*↓----------------------- REACTIONS -----------------------↓*@
+@{
+    var emojis = ViewBag.Emojis as List<ReactionViewModel>;
+    var emojiCount = Model.ReactionCounts;
+    var totalCount = Model.Reactions.Count;
+    var viewModel = Model.GetType().Name;
+    // var targetType = isComment ? "Comment" : "Post";
+}
+
+<div class="mb-0">
+    <div class="p-2" class="btn btn-light">
+        <form method="post" action="@Url.Action("AddReaction", "Reaction", new { postId = Model.Id })">
+            
+            <input type="hidden" name="viewModel" value="@Model" />
+            @if (viewModel == "CommentViewModel")
+            {
+                <input type="hidden" name="CommentId" value="@Model.Id" />
+                <input type="hidden" name="PostId" value="@Model.PostId" />
+            }
+            else
+            {
+                <input type="hidden" name="PostId" value="@Model.Id" />
+            }
+
+
+            <div class="btn-group" role="group" data-bs-toggle="tooltip" data-bs-placement="right" title="Total Reactions: @totalCount">
+                @foreach (var reaction in emojis)
+                {
+                    
+                    var value = 0;
+                    @if (emojiCount.ContainsKey(reaction))
+                    {
+                        value = emojiCount[reaction];
+                    }
+                    var greyscale = value == 0 ? 1 : 0;
+                    var disabled = ViewBag.IsAuthenticated ? "" : "disabled";
+                    <button type="submit" name="ReactionType" style="filter: grayscale(@greyscale);" value="@reaction.ReactionTypeId" class="btn btn-light @disabled" data-bs-toggle="tooltip" data-bs-placement="top" title="@value">
+                        @reaction.Emoji
+                    </button>
+
+                }
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+@*↑----------------------- REACTIONS -----------------------↑*@
